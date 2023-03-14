@@ -4,6 +4,7 @@ I will be using:
 -TypeScript
 -SASS/SCSS
 -React.js
+-Redux
 -React Transition Group (CSS animation library)
 -Firebase (Firestore Database for data and users, and Authentication RESTful API)
 -RESTful API (Open Weather by worldapi)
