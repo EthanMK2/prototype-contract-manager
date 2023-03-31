@@ -8,22 +8,22 @@ const MainNavigation = () => {
                     <NavLink to="/">Home</NavLink>
                 </li>
                 <li>
-                    <NavLink to="/">Create Job</NavLink>
+                    <NavLink to="/createJob">Create Job</NavLink>
                 </li>
                 <li>
-                    <NavLink to="/">Estimate</NavLink>
+                    <NavLink to="/estimate">Estimate</NavLink>
                 </li>
                 <li>
-                    <NavLink to="/">Calculate</NavLink>
+                    <NavLink to="/calculate">Calculate</NavLink>
                 </li>
                 <li>
-                    <NavLink to="/">Sourcing</NavLink>
+                    <NavLink to="/sourcing">Sourcing</NavLink>
                 </li>
                 <li>
-                    <NavLink to="/">Closing Inspection</NavLink>
+                    <NavLink to="/inspection">Closing Inspection</NavLink>
                 </li>
                 <li>
-                    <NavLink to="/">History</NavLink>
+                    <NavLink to="/history">History</NavLink>
                 </li>
             </ul>
         </nav>
