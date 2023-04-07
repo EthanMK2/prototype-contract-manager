@@ -1,9 +1,15 @@
 import PageTitle from "../components/PageTitle";
 
-const CreateJobResumePage = () => {
-    return <>
-    <PageTitle title="Create Job (RESUME)" />
-</>
-}
+import styles from "../sass/pages/CreateJobResume.module.scss";
 
-export default CreateJobResumePage;  // shows the create job process page
+const CreateJobResumePage = () => {
+  return (
+    <>
+      <main className={styles["main-content"]}>
+        <PageTitle title="Create Job (RESUME)" />
+      </main>
+    </>
+  );
+};
+
+export default CreateJobResumePage; // shows the create job process page

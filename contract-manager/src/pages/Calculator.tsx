@@ -1,9 +1,15 @@
 import PageTitle from "../components/PageTitle";
 
-const CalculatorPage = () => {
-    return <>
-    <PageTitle title="Calculator Page" />
-</>
-}
+import styles from "../sass/pages/Calculator.module.scss";
 
-export default CalculatorPage;  // calculator page
+const CalculatorPage = () => {
+  return (
+    <>
+      <main className={styles["main-content"]}>
+        <PageTitle title="Calculator Page" />
+      </main>
+    </>
+  );
+};
+
+export default CalculatorPage; // calculator page
