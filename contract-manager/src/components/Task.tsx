@@ -1,13 +1,12 @@
-// type task = {
-//     completed: boolean,
-//     description: string,
-//     note: string,
-//     cost: number | string
-// }
 import { useState } from "react";
+import ReactDOM from "react-dom";
 import task from "../models/job/task";
 
-const Task = ({ completed, description, note, cost }: task) => {
+type taskProp = {
+  task: task;
+};
+
+const Task = ({ task }: taskProp) => {
   const [noteOpen, setNoteOpen] = useState(false);
 
   const onOpenNote = () => {
@@ -15,8 +14,8 @@ const Task = ({ completed, description, note, cost }: task) => {
   };
 
   const onCloseNote = () => {
-    setNoteOpen(false)
-  }
+    setNoteOpen(false);
+  };
 
   return (
     <li>
@@ -24,19 +23,20 @@ const Task = ({ completed, description, note, cost }: task) => {
         style={{
           width: 10,
           height: 10,
-          backgroundColor: completed ? "green" : "gray",
+          backgroundColor: task.completed ? "green" : "gray",
         }}
       ></div>
-      <p>{description}</p>
-      {noteOpen && (
-        <div>
-          <p>{note}</p>
-          <button onClick={onCloseNote}>Close</button>
-        </div>
-      )}
+      <p>{task.description}</p>
+      {noteOpen &&
+        ReactDOM.createPortal(
+          <div>
+            <p>{task.note}</p>
+            <button onClick={onCloseNote}>Close</button>
+          </div>,
+          document.getElementById("overlay-root")!
+        )}
       {!noteOpen && <button onClick={onOpenNote}>Note</button>}
-      {/* NOTE COMPONENT (open modal on click) */}
-      <p>${cost}</p>
+      <p>${task.cost}</p>
     </li>
   );
 };
