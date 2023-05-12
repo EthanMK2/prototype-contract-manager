@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import styles from "../sass/pages/Login.module.scss";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import styles from "../sass/pages/SignUp.module.scss";
+import { Form } from "react-router-dom";
 
-const Login = () => {
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+const SignUp = () => {
   useEffect(() => {
     const appGrid = document.getElementById("app-grid"); // bad, but need to modify parent grid style
     appGrid!.style.display = "block";
@@ -15,9 +17,9 @@ const Login = () => {
     event.preventDefault();
     // send this data to firebase url, return token
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // store token, then navigate
+        // created and signed in! store then navigate
         const user = userCredential.user;
         console.log(user);
       })
@@ -30,7 +32,7 @@ const Login = () => {
 
   return (
     <main>
-      <h1 className={styles["login-title"]}>Login</h1>
+      <h1 className={styles["signup-title"]}>SignUp</h1>
       <form onSubmit={submitHandler}>
         <input
           id="email"
@@ -46,10 +48,10 @@ const Login = () => {
             setPassword(event.target.value);
           }}
         />
-        <button type="submit">Login</button>
+        <button type="submit">SignUp</button>
       </form>
     </main>
   );
 };
 
-export default Login;
+export default SignUp;

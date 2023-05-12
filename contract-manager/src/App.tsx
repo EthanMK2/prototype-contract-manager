@@ -18,6 +18,8 @@ import HistoryNavigation from "./pages/history/HistoryNavigation";
 import EstimateHistory from "./pages/history/EstimateHistory";
 import InspectionHistory from "./pages/history/InspectionHistory";
 import job from "./models/job/job";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 // import contact from "./models/job/contact";
 // import task from "./models/job/task";
 // import notes from "./models/job/notes";
@@ -57,6 +59,14 @@ const DUMMY_JOB: job = {
 function App() {
   const router = createBrowserRouter([
     {
+      path: "/login",
+      element: <Login />,
+    },
+    {
+      path: "signup",
+      element: <SignUp />,
+    },
+    {
       path: "/",
       element: <MainNavigation />,
       children: [
@@ -90,7 +100,7 @@ function App() {
   ]);
 
   return (
-    <div className={styles.App}>
+    <div className={styles.App} id="app-grid">
       <RouterProvider router={router} />
     </div>
   );
