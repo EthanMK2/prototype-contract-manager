@@ -1,9 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLoaderData } from "react-router-dom";
 import PageTitle from "../components/PageTitle";
 import numbers from "../models/numbers";
 
+import {
+  Firestore,
+  collection,
+  doc,
+  query,
+  setDoc,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../main";
+
 import styles from "../sass/pages/Calculator.module.scss";
 import { Value } from "sass";
+import SavedNumbersModal from "../components/modals/SavedNumbersModal";
 
 let DUMMY_LIST: numbers = [
   {
@@ -30,7 +42,14 @@ let DUMMY_LIST: numbers = [
 
 const CalculatorPage = () => {
   const [listOpen, setListOpen] = useState(false);
-  const [savedNumbers, setSavedNumbers] = useState<numbers>(DUMMY_LIST);
+  const [savedNumbers, setSavedNumbers] = useState<numbers>([]);
+
+  const data: any = useLoaderData();
+
+  useEffect(() => {
+    console.log("FETCHED DATA")
+    setSavedNumbers(data);
+  }, []);
 
   // display the first two numbers, or just the one that exists, or nothing if none
   const listPreview = savedNumbers?.at(0) ? (
@@ -45,9 +64,19 @@ const CalculatorPage = () => {
           <p>{savedNumbers?.at(1)?.value}</p>
         </li>
       ) : null}
-      <button onClick={() => {setListOpen(true)}}>View Saved Numbers</button>
+      <button
+        onClick={() => {
+          setListOpen(true);
+        }}
+      >
+        View Saved Numbers
+      </button>
     </ul>
   ) : null;
+
+  const onCloseSavedNumbersModal = () => {
+    setListOpen(false);
+  };
 
   return (
     <>
@@ -56,19 +85,10 @@ const CalculatorPage = () => {
 
         {listPreview}
         {listOpen ? (
-          <div>
-            <ul>
-              {savedNumbers.map((num) => {
-                return (
-                  <li>
-                    <p>{num.name}</p>
-                    <p>{num.value}</p>
-                  </li>
-                );
-              })}
-            </ul>
-            <button onClick={() => {setListOpen(false)}}>Close</button>
-          </div>
+          <SavedNumbersModal
+            onCloseSavedNumbers={onCloseSavedNumbersModal}
+            savedNumArray={savedNumbers}
+          />
         ) : null}
       </main>
     </>
@@ -76,3 +96,18 @@ const CalculatorPage = () => {
 };
 
 export default CalculatorPage; // calculator page
+
+export const loader = async () => {
+  const q = query(collection(db, "users/testUser/savedNumbers"));
+
+  let savedNumbers: numbers = [];
+
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc: any) => {
+    savedNumbers.push(doc.data());
+    console.log(doc.data());
+  });
+
+  console.log(savedNumbers);
+  return savedNumbers;
+};

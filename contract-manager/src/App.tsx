@@ -24,6 +24,9 @@ import SignUp from "./pages/SignUp";
 // import task from "./models/job/task";
 // import notes from "./models/job/notes";
 
+import { loader as calculatorLoader } from "./pages/Calculator";
+import { Firestore } from "firebase/firestore";
+
 const DUMMY_JOB: job = {
   checklist: [
     {
@@ -56,6 +59,7 @@ const DUMMY_JOB: job = {
   expectedPay: "329.00",
 };
 
+// Make db a context to share between components?
 function App() {
   const router = createBrowserRouter([
     {
@@ -77,7 +81,11 @@ function App() {
         { path: "/createJob/new", element: <CreateJobNewPage /> },
         { path: "/estimate", element: <EstimateMenuPage /> },
         { path: "/estimate/:estimateId", element: <EstimatePage /> },
-        { path: "/calculate", element: <CalculatorPage /> },
+        {
+          path: "/calculate",
+          element: <CalculatorPage />,
+          loader: calculatorLoader,
+        },
         { path: "/sourcing", element: <SourcingPage /> },
         { path: "/inspection", element: <InspectionMenuPage /> },
         { path: "/inspection/new", element: <NewInspectionPage /> },
