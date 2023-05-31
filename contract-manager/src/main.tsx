@@ -4,8 +4,9 @@ import App from './App'
 import firebaseInit from './firebaseInit'
 
 import {doc, setDoc, getFirestore, Firestore} from 'firebase/firestore';
+import { FirebaseApp } from 'firebase/app';
 
-const app = firebaseInit();
+export const app = firebaseInit();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -13,4 +14,4 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   </React.StrictMode>,
 )
 
-export const db: Firestore = getFirestore(app)
+export const db: Firestore = getFirestore(app);

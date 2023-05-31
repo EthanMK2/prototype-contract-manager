@@ -4,41 +4,14 @@ import PageTitle from "../components/PageTitle";
 import numbers from "../models/numbers";
 
 import {
-  Firestore,
   collection,
-  doc,
   query,
-  setDoc,
   getDocs,
 } from "firebase/firestore";
-import { db } from "../main";
+import { db} from "../main";
 
 import styles from "../sass/pages/Calculator.module.scss";
-import { Value } from "sass";
 import SavedNumbersModal from "../components/modals/SavedNumbersModal";
-
-let DUMMY_LIST: numbers = [
-  {
-    name: "My number1",
-    value: 200,
-  },
-  {
-    name: "numbertwo",
-    value: 900,
-  },
-  {
-    name: "thirdnum",
-    value: 600,
-  },
-  {
-    name: "fourth num",
-    value: 7330,
-  },
-  {
-    name: "fifth",
-    value: "$1.23",
-  },
-];
 
 const CalculatorPage = () => {
   const [listOpen, setListOpen] = useState(false);
@@ -47,7 +20,7 @@ const CalculatorPage = () => {
   const data: any = useLoaderData();
 
   useEffect(() => {
-    console.log("FETCHED DATA")
+    console.log("FETCHED DATA");
     setSavedNumbers(data);
   }, []);
 
@@ -98,7 +71,9 @@ const CalculatorPage = () => {
 export default CalculatorPage; // calculator page
 
 export const loader = async () => {
-  const q = query(collection(db, "users/testUser/savedNumbers"));
+  let userId: any = localStorage.getItem("uid");
+
+  const q = query(collection(db, `users/${userId}/savedNumbers`));
 
   let savedNumbers: numbers = [];
 

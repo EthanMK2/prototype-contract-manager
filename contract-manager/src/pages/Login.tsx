@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "../sass/pages/Login.module.scss";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   useEffect(() => {
@@ -18,6 +19,7 @@ const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // store token, then navigate
+        localStorage.setItem("uid", userCredential.user.uid);
         const user = userCredential.user;
         console.log(user);
       })
@@ -48,6 +50,7 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
+      <Link to="/">Home</Link>
     </main>
   );
 };
