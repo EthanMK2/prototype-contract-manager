@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import PageTitle from "../components/PageTitle";
 import numbers from "../models/numbers";
@@ -7,8 +7,13 @@ import {
   collection,
   query,
   getDocs,
+  setDoc,
+  doc,
+  addDoc,
+  deleteDoc,
+  where,
 } from "firebase/firestore";
-import { db} from "../main";
+import { db } from "../main";
 
 import styles from "../sass/pages/Calculator.module.scss";
 import SavedNumbersModal from "../components/modals/SavedNumbersModal";
@@ -17,12 +22,51 @@ const CalculatorPage = () => {
   const [listOpen, setListOpen] = useState(false);
   const [savedNumbers, setSavedNumbers] = useState<numbers>([]);
 
+  const userId: any = localStorage.getItem("uid");
+
   const data: any = useLoaderData();
 
   useEffect(() => {
-    console.log("FETCHED DATA");
     setSavedNumbers(data);
   }, []);
+
+  const numNameRef: any = useRef<any>();
+  const numValueRef: any = useRef<any>();
+
+  const saveCustomNumber = async (e: any) => {
+    e.preventDefault();
+
+    if (!numNameRef.current.value || !numValueRef.current.value) {
+      // display error
+      console.log("ERROR: No values");
+      return;
+    }
+
+    console.log(
+      "saving number: ",
+      numNameRef.current.value,
+      numValueRef.current.value
+    );
+
+    await addDoc(collection(db, "users", `${userId}/savedNumbers`), {
+      name: numNameRef.current.value,
+      value: numValueRef.current.value,
+    }).finally(() => {
+      retrieveSavedNumbers().then((savedNumbers: numbers) => {
+        setSavedNumbers(savedNumbers);
+      });
+    });
+  };
+
+  const deleteCustomNumber = async (id: string) => {
+    await deleteDoc(doc(db, "users", `${userId}/savedNumbers/${id}`)).finally(
+      () => {
+        retrieveSavedNumbers().then((savedNumbers: numbers) => {
+          setSavedNumbers(savedNumbers);
+        });
+      }
+    );
+  };
 
   // display the first two numbers, or just the one that exists, or nothing if none
   const listPreview = savedNumbers?.at(0) ? (
@@ -57,10 +101,21 @@ const CalculatorPage = () => {
         <PageTitle title="Calculator Page" />
 
         {listPreview}
+        <form id="save-number-form" onSubmit={saveCustomNumber}>
+          <input type="text" placeholder="Name" ref={numNameRef}></input>
+          <input
+            type="number"
+            placeholder="Number"
+            ref={numValueRef}
+            step={0.01}
+          ></input>
+          <button>Save Number</button>
+        </form>
         {listOpen ? (
           <SavedNumbersModal
             onCloseSavedNumbers={onCloseSavedNumbersModal}
             savedNumArray={savedNumbers}
+            onDeleteSavedNumber={deleteCustomNumber}
           />
         ) : null}
       </main>
@@ -68,10 +123,8 @@ const CalculatorPage = () => {
   );
 };
 
-export default CalculatorPage; // calculator page
-
-export const loader = async () => {
-  let userId: any = localStorage.getItem("uid");
+async function retrieveSavedNumbers() {
+  const userId: any = localStorage.getItem("uid");
 
   const q = query(collection(db, `users/${userId}/savedNumbers`));
 
@@ -79,10 +132,17 @@ export const loader = async () => {
 
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc: any) => {
-    savedNumbers.push(doc.data());
-    console.log(doc.data());
+    savedNumbers.push({
+      name: doc.data().name,
+      value: doc.data().value,
+      id: doc.id,
+    });
   });
-
-  console.log(savedNumbers);
   return savedNumbers;
+}
+
+export default CalculatorPage; // calculator page
+
+export const loader = async () => {
+  return retrieveSavedNumbers();
 };
