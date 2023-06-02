@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import PageTitle from "../components/PageTitle";
 import numbers from "../models/numbers";
@@ -7,11 +7,9 @@ import {
   collection,
   query,
   getDocs,
-  setDoc,
   doc,
   addDoc,
   deleteDoc,
-  where,
 } from "firebase/firestore";
 import { db } from "../main";
 
@@ -51,24 +49,40 @@ const CalculatorPage = () => {
     await addDoc(collection(db, "users", `${userId}/savedNumbers`), {
       name: numNameRef.current.value,
       value: numValueRef.current.value,
-    }).finally(() => {
-      retrieveSavedNumbers().then((savedNumbers: numbers) => {
-        setSavedNumbers(savedNumbers);
-      });
-    });
-  };
-
-  const deleteCustomNumber = async (id: string) => {
-    await deleteDoc(doc(db, "users", `${userId}/savedNumbers/${id}`)).finally(
-      () => {
-        retrieveSavedNumbers().then((savedNumbers: numbers) => {
-          setSavedNumbers(savedNumbers);
+    }).then(
+      (returnedDoc) => {
+        // resolved, add item locally with new id from response
+        setSavedNumbers((curList: numbers) => {
+          return curList.concat({
+            name: numNameRef.current.value,
+            value: numValueRef.current.value,
+            id: returnedDoc.id,
+          });
         });
+      },
+      () => {
+        // rejected, simply notify and return
+        return;
       }
     );
   };
 
-  // display the first two numbers, or just the one that exists, or nothing if none
+  const deleteCustomNumber = (id: string) => {
+    deleteDoc(doc(db, "users", `${userId}/savedNumbers/${id}`)).then(
+      () => {
+        // resolved, remove item locally
+        setSavedNumbers((curList: numbers) => {
+          return curList.filter((num) => num.id != id);
+        });
+      },
+      () => {
+        // rejected, simply notify and return
+        return;
+      }
+    );
+  };
+
+  // display the first two numbers, or just the one that exists, or nothing
   const listPreview = savedNumbers?.at(0) ? (
     <ul>
       <li>
@@ -95,6 +109,7 @@ const CalculatorPage = () => {
     setListOpen(false);
   };
 
+  // ============ CALCULATOR PAGE JSX ==============
   return (
     <>
       <main className={styles["main-content"]}>
@@ -123,7 +138,9 @@ const CalculatorPage = () => {
   );
 };
 
-async function retrieveSavedNumbers() {
+export default CalculatorPage; // calculator page
+
+export const loader = async () => {
   const userId: any = localStorage.getItem("uid");
 
   const q = query(collection(db, `users/${userId}/savedNumbers`));
@@ -139,10 +156,4 @@ async function retrieveSavedNumbers() {
     });
   });
   return savedNumbers;
-}
-
-export default CalculatorPage; // calculator page
-
-export const loader = async () => {
-  return retrieveSavedNumbers();
 };

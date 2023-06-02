@@ -3,7 +3,7 @@ import numbers from "../../models/numbers";
 type savedNumbersModal = {
   savedNumArray: numbers;
   onCloseSavedNumbers: () => void;
-  onDeleteSavedNumber: (id: string) => Promise<void>;
+  onDeleteSavedNumber: (id: string) => void;
 };
 
 const SavedNumbersModal = ({
