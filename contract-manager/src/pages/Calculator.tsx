@@ -15,6 +15,7 @@ import { db } from "../main";
 
 import styles from "../sass/pages/Calculator.module.scss";
 import SavedNumbersModal from "../components/modals/SavedNumbersModal";
+import Calculator from "../components/Calculator";
 
 const CalculatorPage = () => {
   const [listOpen, setListOpen] = useState(false);
@@ -133,6 +134,7 @@ const CalculatorPage = () => {
             onDeleteSavedNumber={deleteCustomNumber}
           />
         ) : null}
+        <Calculator />
       </main>
     </>
   );
