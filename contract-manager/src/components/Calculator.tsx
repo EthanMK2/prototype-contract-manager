@@ -17,9 +17,6 @@ const performOperation: any = {
 
 const Calculator = () => {
   const numEntered = (num: number) => {
-    const displayOperation: string = curNum
-      ? curNum.toString()
-      : num.toString();
     setCurNum((prevNumber) => {
       if (!prevNumber && !operation) {
         setResult(num);
@@ -30,38 +27,51 @@ const Calculator = () => {
         });
         return parseInt(prevNumber.toString() + num.toString());
       } else if (prevNumber && operation) {
-        // setResult((prevResult) => {
-        //   return performOperation[operation](
-        //     prevResult,
-        //     parseInt(prevNumber.toString() + num.toString())
-        //   );
-        // });
         return parseInt(prevNumber.toString() + num.toString());
       } else if (!prevNumber && operation) {
-        // setResult((prevResult) => {
-        //   return performOperation[operation](prevResult, num);
-        // });
         return num;
       }
 
       // will never run?
       return num;
     });
-    setDisplayedOperations((prevDisplay) => {
-      return prevDisplay ? prevDisplay + displayOperation : displayOperation;
+    setDisplayedOperations(() => {
+      let displayOperation: string;
+      if (curNum && !operation) {
+        
+        return (displayOperation =
+          `${curNum.toString()}` + `${num.toString()}`);
+      } else if (curNum && operation) {
+        displayOperation = `${curNum.toString()}` + `${num.toString()}`;
+        return displayOperation;
+      } else {
+        return num.toString();
+      }
     });
   };
 
   const operationEntered = (operation: string) => {
     // show result when previous operation exists
     setOperation((prevOperation) => {
-      if (prevOperation) {
+      if (prevOperation && curNum) {
         setResult((prevResult) => {
           return performOperation[prevOperation](prevResult, curNum);
         });
         return operation;
       } else {
-        return operation;
+        if (curNum) {
+          setDisplayedOperations(`${curNum}${operation}`);
+          return operation;
+        } else if (prevOperation) {
+          setDisplayedOperations((prevDisplay) => {
+            const newOperationDisplay =
+              prevDisplay!.slice(0, prevDisplay!.length - 1) + operation;
+            return newOperationDisplay;
+          });
+          return operation;
+        } else {
+          return null;
+        }
       }
     });
     setCurNum(null);
@@ -77,8 +87,12 @@ const Calculator = () => {
   const onEquals = () => {
     if (curNum && operation) {
       setResult((prevResult) => {
-        return performOperation[operation](prevResult, curNum);
+        const result: number = performOperation[operation](prevResult, curNum);
+        setCurNum(result);
+        setDisplayedOperations(result.toString());
+        return result;
       });
+      setOperation(null);
     }
   };
 
