@@ -19,15 +19,19 @@ const Calculator = () => {
   const numEntered = (num: number) => {
     setCurNum((prevNumber) => {
       if (!prevNumber && !operation) {
-        setResult(num);
+        setResult(num.toString());
         return num;
       } else if (prevNumber && !operation) {
         setResult((prevResult) => {
-          return parseInt(prevResult.toString() + num.toString());
+          if (num === 0 && prevNumber.toString().includes(".")) {
+            const trailZeroString: string = prevResult.toString() + num.toString();
+            return parseFloat(trailZeroString).toFixed(trailZeroString.split('.')[1].length);
+          }
+          return parseFloat(prevResult.toString() + num.toString()).toString();
         });
-        return parseInt(prevNumber.toString() + num.toString());
+        return parseFloat(prevNumber.toString() + num.toString());
       } else if (prevNumber && operation) {
-        return parseInt(prevNumber.toString() + num.toString());
+        return parseFloat(prevNumber.toString() + num.toString());
       } else if (!prevNumber && operation) {
         return num;
       }
@@ -38,7 +42,6 @@ const Calculator = () => {
     setDisplayedOperations(() => {
       let displayOperation: string;
       if (curNum && !operation) {
-        
         return (displayOperation =
           `${curNum.toString()}` + `${num.toString()}`);
       } else if (curNum && operation) {
@@ -49,13 +52,23 @@ const Calculator = () => {
       }
     });
   };
-
   const operationEntered = (operation: string) => {
     // show result when previous operation exists
     setOperation((prevOperation) => {
+      if (operation === "." && !prevOperation) {
+        console.log("Make Decimal Function");  // prime number for first number after decimal? CHECK IF "." already there (already a decimal)
+        return null;
+      } else if (operation === "." && prevOperation != ".") {
+        console.log("don't touch previous operation: do nothing");
+        return prevOperation;
+      } else if (operation === "." && prevOperation == ".") {
+        console.log("repeated decimal: do nothing")
+        // track whether curNum is already a decimal?
+        return prevOperation;
+      }
       if (prevOperation && curNum) {
         setResult((prevResult) => {
-          return performOperation[prevOperation](prevResult, curNum);
+          return performOperation[prevOperation](prevResult, curNum).toString();
         });
         return operation;
       } else {
@@ -74,12 +87,16 @@ const Calculator = () => {
         }
       }
     });
-    setCurNum(null);
+    if (operation === ".") {
+      return;
+    } else if (curNum && operation) {
+      setCurNum(null);
+    }
   };
 
   const clearNumbers = () => {
     setCurNum(null);
-    setResult(0);
+    setResult("");
     setOperation(null);
     setDisplayedOperations(null);
   };
@@ -90,7 +107,7 @@ const Calculator = () => {
         const result: number = performOperation[operation](prevResult, curNum);
         setCurNum(result);
         setDisplayedOperations(result.toString());
-        return result;
+        return result.toString();
       });
       setOperation(null);
     }
@@ -101,7 +118,7 @@ const Calculator = () => {
   );
   const [curNum, setCurNum] = useState<number | null | undefined>(0);
   const [operation, setOperation] = useState<string | null>(null);
-  const [result, setResult] = useState<number>(0);
+  const [result, setResult] = useState<string>("");
 
   return (
     <div>
