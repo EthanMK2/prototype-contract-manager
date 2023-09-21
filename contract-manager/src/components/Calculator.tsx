@@ -1,19 +1,5 @@
-import { useState } from "react";
-
-// const performOperation: any = {
-//   "+": function (x: number, y: number): number {
-//     return x + y;
-//   },
-//   "-": function (x: number, y: number): number {
-//     return x - y;
-//   },
-//   x: function (x: number, y: number): number {
-//     return x * y;
-//   },
-//   "/": function (x: number, y: number): number {
-//     return x / y;
-//   },
-// };
+import { useEffect, useState } from "react";
+import calculate from "../utils/calculator";
 
 const checkOperatorInput = (expression: string, operator: string): string => {
   if (expression.length == 0) {
@@ -38,7 +24,6 @@ const checkOperatorInput = (expression: string, operator: string): string => {
 
 const checkDecimalInput = (expression: string): boolean => {
   for (let i = expression.length - 1; i >= 0; i--) {
-    console.log(expression[i]);
     const validOperators = ["+", "-", "/", "*"];
     if (validOperators.includes(expression[i])) {
       return true;
@@ -72,12 +57,30 @@ const Calculator = () => {
     });
   };
 
+  const cleanExpressionEnd = (expression: string): string => {
+    let cleanExpression = expression;
+    const validOperators = ["+", "-", "/", "*"];
+    while (
+      cleanExpression[cleanExpression.length - 1] == "." ||
+      validOperators.includes(cleanExpression[cleanExpression.length - 1])
+    ) {
+      cleanExpression = cleanExpression.slice(0, -1);
+    }
+
+    return cleanExpression;
+  };
+
   const [expression, setExpression] = useState<string>("");
+  const [total, setTotal] = useState<string>("");
+
+  useEffect(() => {
+    setTotal(calculate(cleanExpressionEnd(expression)));
+  }, [expression]);
 
   return (
     <div>
-      <h1>{expression}</h1>
-      <h2>= {}</h2>
+      <h1>{expression.replaceAll("/", "÷").replaceAll("*", "×")}</h1>
+      <h2>= {total}</h2>
       <ul>
         <div>
           <button
@@ -177,7 +180,7 @@ const Calculator = () => {
               addOperator("*");
             }}
           >
-            x
+            &times;
           </button>
           <button
             onClick={() => {
