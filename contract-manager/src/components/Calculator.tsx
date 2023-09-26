@@ -34,7 +34,11 @@ const checkDecimalInput = (expression: string): boolean => {
   return true;
 };
 
-const Calculator = () => {
+type calcProps = {
+  onSaveNum: (num: string) => void;
+};
+
+const Calculator = ({ onSaveNum }: calcProps) => {
   const addNum = (num: string): void => {
     setExpression((prevExpression) => {
       return prevExpression + num;
@@ -74,7 +78,14 @@ const Calculator = () => {
   const [total, setTotal] = useState<string>("");
 
   useEffect(() => {
-    setTotal(calculate(cleanExpressionEnd(expression)));
+    const unroundedTotal: string = calculate(cleanExpressionEnd(expression));
+
+    // rounded to two decimals here
+    const total: string = unroundedTotal
+      ? parseFloat(unroundedTotal).toFixed(2).toString()
+      : "";
+    setTotal(total);
+    onSaveNum(total);
   }, [expression]);
 
   return (
@@ -82,6 +93,22 @@ const Calculator = () => {
       <h1>{expression.replaceAll("/", "÷").replaceAll("*", "×")}</h1>
       <h2>= {total}</h2>
       <ul>
+        <div>
+          <button
+            onClick={() => {
+              // backspace
+              setExpression((prevExpression: string) => {
+                if (prevExpression.length > 0) {
+                  return prevExpression.slice(0, -1);
+                } else {
+                  return prevExpression;
+                }
+              });
+            }}
+          >
+            &#8592;
+          </button>
+        </div>
         <div>
           <button
             onClick={() => {
@@ -204,7 +231,14 @@ const Calculator = () => {
         >
           C
         </button>
-        <button onClick={() => {}}>=</button>
+        <button
+          onClick={() => {
+            setExpression(total);
+            setTotal("");
+          }}
+        >
+          =
+        </button>
       </ul>
     </div>
   );

@@ -20,6 +20,7 @@ import Calculator from "../components/Calculator";
 const CalculatorPage = () => {
   const [listOpen, setListOpen] = useState(false);
   const [savedNumbers, setSavedNumbers] = useState<numbers>([]);
+  const [calcNum, setCalcNum] = useState<string>("");
 
   const userId: any = localStorage.getItem("uid");
 
@@ -106,8 +107,13 @@ const CalculatorPage = () => {
     </ul>
   ) : null;
 
-  const onCloseSavedNumbersModal = () => {
+  const onCloseSavedNumbersModal = (): void => {
     setListOpen(false);
+  };
+
+  const onSaveNumFromCalc = (num: string): void => {
+    setCalcNum(num);
+    return;
   };
 
   // ============ CALCULATOR PAGE JSX ==============
@@ -118,15 +124,23 @@ const CalculatorPage = () => {
 
         {listPreview}
         <form id="save-number-form" onSubmit={saveCustomNumber}>
-          <input type="text" placeholder="Name" ref={numNameRef}></input>
+          <input type="text" placeholder="Name" ref={numNameRef} required />
           <input
             type="number"
             placeholder="Number"
             ref={numValueRef}
             step={0.01}
-          ></input>
+            required
+          />
           <button>Save Number</button>
         </form>
+        <button
+          onClick={() => {
+            numValueRef.current.value = calcNum;
+          }}
+        >
+          Number From Calculator
+        </button>
         {listOpen ? (
           <SavedNumbersModal
             onCloseSavedNumbers={onCloseSavedNumbersModal}
@@ -134,7 +148,9 @@ const CalculatorPage = () => {
             onDeleteSavedNumber={deleteCustomNumber}
           />
         ) : null}
-        <Calculator />
+        <Calculator
+          onSaveNum={onSaveNumFromCalc}
+        />
       </main>
     </>
   );

@@ -63,9 +63,7 @@ const calculate = (expression: string): string => {
 
   while (numArr.length > 1) {
     const firstNum = parseFloat(numArr[0]);
-    console.log("first: " + firstNum)
     const secondNum = parseFloat(numArr[1]);
-    console.log("second: " + secondNum)
     const newNum = performOperation(firstNum, secondNum, operatorArr[0]);
 
     numArr.shift();
