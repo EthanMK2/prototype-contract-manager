@@ -5,6 +5,7 @@ import ContactModal from "./modals/ContactModal";
 
 import ReactDOM from "react-dom";
 import Task from "./Task";
+import Note from "./Note";
 
 const Job = ({
   checklist,
@@ -34,9 +35,21 @@ const Job = ({
   return (
     <article>
       <h1>{title}</h1>
-      {checklist.map((task) => {
-        return <Task task={task} />;
-      })}
+      <button>BACK TO MENU</button>
+      <button>Cancel Job</button>
+      <ul>
+        {checklist.map((task) => {
+          return <Task task={task} />;
+        })}
+        <Task
+          task={{
+            completed: inspectionSuccessful,
+            description: "Inspection and Payment Collected?",
+            note: "",
+            cost: "",
+          }}
+        />
+      </ul>
       <div>
         <Contact
           firstName={contacts?.at(0)?.firstName}
@@ -53,6 +66,20 @@ const Job = ({
             document.getElementById("overlay-root")!
           )}
       </div>
+      <section>
+        <h1>Notes</h1>
+        <Note description={notes.description} />
+      </section>
+      <p>
+        Expected Total Charge: ${expectedPay} <button>Edit</button>
+      </p>
+      <button>Complete Job</button>
+      <section>
+        <h1>Weather Forecast</h1>
+      </section>
+      <section>
+        <h1>Location</h1>
+      </section>
     </article>
   );
 };

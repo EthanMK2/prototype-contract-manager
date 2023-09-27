@@ -5,7 +5,8 @@ import task from "../models/job/task";
 type taskProp = {
   task: task;
 };
-
+// a task cost defined as an empty string means there is no cost defined yet or is free
+// a task note defined as an empty string means there is no note defined yet
 const Task = ({ task }: taskProp) => {
   const [noteOpen, setNoteOpen] = useState(false);
 
@@ -35,8 +36,8 @@ const Task = ({ task }: taskProp) => {
           </div>,
           document.getElementById("overlay-root")!
         )}
-      {!noteOpen && <button onClick={onOpenNote}>Note</button>}
-      <p>${task.cost}</p>
+      {!noteOpen && task.note != "" && <button onClick={onOpenNote}>Note</button>}
+      <p>{task.cost != "" && <>$</>}{task.cost}</p>
     </li>
   );
 };
