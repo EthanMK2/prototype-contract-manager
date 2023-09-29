@@ -42,12 +42,6 @@ const CalculatorPage = () => {
       return;
     }
 
-    console.log(
-      "saving number: ",
-      numNameRef.current.value,
-      numValueRef.current.value
-    );
-
     await addDoc(collection(db, "users", `${userId}/savedNumbers`), {
       name: numNameRef.current.value,
       value: numValueRef.current.value,
@@ -148,9 +142,7 @@ const CalculatorPage = () => {
             onDeleteSavedNumber={deleteCustomNumber}
           />
         ) : null}
-        <Calculator
-          onSaveNum={onSaveNumFromCalc}
-        />
+        <Calculator onSaveNum={onSaveNumFromCalc} />
       </main>
     </>
   );

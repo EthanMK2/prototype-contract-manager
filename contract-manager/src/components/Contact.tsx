@@ -1,12 +1,39 @@
 import contact from "../models/job/contact";
 
-const Contact = ({firstName, lastName, phone}: contact) => {
-  return <>
-    <article>
-        <h1>{firstName} {lastName}</h1>
+type contactProps = {
+  firstName: string | undefined;
+  lastName: string | undefined;
+  phone: string | undefined;
+  id: string;
+  onDeleteContact: (id: string) => void,
+  showDelete: boolean
+};
+
+const Contact = ({
+  firstName,
+  lastName,
+  phone,
+  id,
+  onDeleteContact,
+  showDelete
+}: contactProps) => {
+  return (
+    <>
+      <article>
+        <h1>
+          {firstName} {lastName}
+        </h1>
         <a href={phone}>Phone: {phone}</a>
-    </article>
-  </>;
+        {showDelete && <button
+          onClick={() => {
+            onDeleteContact(id);
+          }}
+        >
+          Delete
+        </button>}
+      </article>
+    </>
+  );
 };
 
 export default Contact;

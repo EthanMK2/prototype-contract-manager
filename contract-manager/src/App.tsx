@@ -27,38 +27,6 @@ import SignUp from "./pages/SignUp";
 import { loader as calculatorLoader } from "./pages/Calculator";
 import { Firestore } from "firebase/firestore";
 
-const DUMMY_JOB: job = {
-  checklist: [
-    {
-      completed: false,
-      description: "Do this task!",
-      note: "This task note says that something came up...",
-      cost: "200.00",
-    },
-    {
-      completed: true,
-      description: "Do other task that is listed here!",
-      note: "This task note says something else...",
-      cost: "300.00",
-    },
-  ],
-  contacts: [
-    { firstName: "Joe", lastName: "Smith", phone: "+1234567890" },
-    { firstName: "Jane", lastName: "Smith", phone: "+9999999999" },
-  ],
-  notes: { description: "Description of job details in depth." },
-  title: "Job Component/Page Test 1",
-  shortDescription: "Quick description only on the list on home page.",
-  address: "0000 Testing Place, Nowhere, NW",
-  completionStatus: "in-progress",
-  createdDate: new Date(),
-  finishDate: new Date(),
-  inspectionSuccessful: false,
-  priority: "HIGH",
-  timeLeft: "5 days",
-  expectedPay: "329.00",
-};
-
 // Make db a context to share between components?
 function App() {
   const router = createBrowserRouter([
@@ -75,7 +43,7 @@ function App() {
       element: <MainNavigation />,
       children: [
         { index: true, element: <Home /> },
-        { path: "/:jobId", element: <JobPage job={DUMMY_JOB} /> },
+        { path: "/:jobId", element: <JobPage /> },
         { path: "/createJob", element: <CreateJobMenuPage /> },
         { path: "/createJob/:jobId", element: <CreateJobResumePage /> },
         { path: "/createJob/new", element: <CreateJobNewPage /> },
