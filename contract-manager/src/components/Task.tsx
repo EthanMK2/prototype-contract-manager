@@ -37,7 +37,7 @@ const Task = ({ task }: taskProp) => {
           document.getElementById("overlay-root")!
         )}
       {!noteOpen && task.note != "" && <button onClick={onOpenNote}>Note</button>}
-      <p>{task.cost != "" && <>$</>}{task.cost}</p>
+      {task.cost != "" && <p>${task.cost}</p>}
     </li>
   );
 };

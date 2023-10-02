@@ -11,7 +11,7 @@ type job = {
     address: string,
     completionStatus: string,  // completed, failed, in-progress
     createdDate: Date,
-    finishDate: Date,
+    finishDate: Date | null,
     inspectionSuccessful: boolean,
     priority: string,
     timeLeft: string,

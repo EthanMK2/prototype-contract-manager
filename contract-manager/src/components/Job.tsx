@@ -15,12 +15,14 @@ const DUMMY_JOB: job = {
       description: "Do this task!",
       note: "This task note says that something came up...",
       cost: "200.00",
+      date: new Date()
     },
     {
       completed: true,
       description: "Do other task that is listed here!",
       note: "This task note says something else...",
       cost: "300.00",
+      date: new Date("2024-12-23")
     },
   ],
   contacts: [
@@ -58,7 +60,8 @@ const Job = () => {
     expectedPay,
   } = job;
 
-  const [contactsOpen, setContactsOpen] = useState(false);
+  const [contactsOpen, setContactsOpen] = useState<boolean>(false);
+  const [notesOpen, setNotesOpen] = useState<boolean>(false);
 
   const onOpenContacts = () => {
     setContactsOpen(true);
@@ -100,6 +103,14 @@ const Job = () => {
     });
   };
 
+  const onOpenJobNotes = () => {
+    setNotesOpen(true);
+  };
+
+  const onCloseJobNotes = () => {
+    setNotesOpen(false);
+  };
+
   return (
     <article>
       <h1>{title}</h1>
@@ -109,12 +120,14 @@ const Job = () => {
         {checklist.map((task) => {
           return <Task task={task} />;
         })}
+        {/* need to change the last checkbox to a different component */}
         <Task
           task={{
             completed: inspectionSuccessful,
             description: "Inspection and Payment Collected?",
             note: "",
             cost: "",
+            date: new Date()
           }}
         />
       </ul>
@@ -142,8 +155,36 @@ const Job = () => {
           )}
       </div>
       <section>
-        <h1>Notes</h1>
-        <Note description={notes.description} />
+        <figure>
+          <figcaption>Notes</figcaption>
+          {notes.description.trim() != "" && (
+            <p>{notes.description}</p>
+          )}
+          <button onClick={onOpenJobNotes}>View Notes</button>
+          {notesOpen &&
+            ReactDOM.createPortal(
+              <form>
+                <textarea
+                  name="notes"
+                  id="notes"
+                  cols={30}
+                  rows={10}
+                  onChange={(e) => {
+                    setJob((prevJob) => {
+                      return {
+                        ...prevJob,
+                        notes: { description: e.target.value },
+                      };
+                    });
+                  }}
+                >
+                  {notes.description}
+                </textarea>
+                <button onClick={onCloseJobNotes}>Done</button>
+              </form>,
+              document.getElementById("overlay-root")!
+            )}
+        </figure>
       </section>
       <p>
         Expected Total Charge: ${expectedPay} <button>Edit</button>

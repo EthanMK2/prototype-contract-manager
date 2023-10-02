@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 
 import styles from "../sass/pages/CreateJobNew.module.scss";
 import ReactDOM from "react-dom";
+import { useNavigate } from "react-router-dom";
 
 const CreateJobNewPage = () => {
   // will create and maintain a Job object state (local variable), and save that object to an existing data object to Firebase (existing from the initial creation in the CreateJobMenu page)
@@ -32,7 +33,10 @@ const CreateJobNewPage = () => {
     });
   };
 
+  const navigate = useNavigate();
+
   const [contactsOpen, setContactsOpen] = useState<boolean>(false);
+  const [notesOpen, setNotesOpen] = useState<boolean>(false);
   // set initial values
   const streetAddressRef = useRef<any>();
   const cityAddressRef = useRef<any>();
@@ -94,12 +98,26 @@ const CreateJobNewPage = () => {
     });
   };
 
+  const onOpenJobNotes = () => {
+    setNotesOpen(true);
+  };
+
+  const onCloseJobNotes = () => {
+    setNotesOpen(false);
+  };
+
   return (
     <>
       <main className={styles["main-content"]}>
         <PageTitle title="Create New Job" />
 
-        <button>BACK</button>
+        <button
+          onClick={() => {
+            navigate("/createJob");
+          }}
+        >
+          BACK
+        </button>
         <button>Delete Job</button>
 
         <section>
@@ -225,36 +243,66 @@ const CreateJobNewPage = () => {
 
           <figure>
             <figcaption>Notes</figcaption>
-            {/* display notes here */}
-            <p>Notes are here</p>
-            <button>+Add Notes</button>
+            {currentJob.notes.description != "" && (
+              <p>{currentJob.notes.description}</p>
+            )}
+            <button onClick={onOpenJobNotes}>View Notes</button>
+            {notesOpen &&
+              ReactDOM.createPortal(
+                <form>
+                  <textarea
+                    name="notes"
+                    id="notes"
+                    cols={30}
+                    rows={10}
+                    onChange={(e) => {
+                      setCurrentJob((prevJob) => {
+                        return {
+                          ...prevJob,
+                          notes: { description: e.target.value },
+                        };
+                      });
+                    }}
+                  >
+                    {currentJob.notes.description}
+                  </textarea>
+                  <button onClick={onCloseJobNotes}>Done</button>
+                </form>,
+                document.getElementById("overlay-root")!
+              )}
           </figure>
         </section>
         <section id="task-list">
           <ul>
-            {/* display list here */}
-            <>
-              <Task
-                task={{
-                  note: "",
-                  description: "Task number one of many",
-                  completed: false,
-                  cost: "",
-                }}
-              />
-              <button>Edit Note</button>
-            </>
-            <>
-              <Task
-                task={{
-                  note: "This one has a note attached",
-                  description: "Task number one of many",
-                  completed: false,
-                  cost: "200.21",
-                }}
-              />
-              <button>Edit Note</button>
-            </>
+            {/* display list ordered by entered order (by date). works b/c entering another task at the same millisecond is impossible */}
+            {currentJob.checklist
+              .sort((a, b) => {
+                if (a.date.getTime() < b.date.getTime()) {
+                  return -1;
+                } else if (a.date.getTime() > b.date.getTime()) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              })
+              .map((task) => {
+                return (
+                  <div>
+                    <Task
+                      task={{
+                        note: task.note,
+                        description: task.description,
+                        completed: task.completed,
+                        cost: task.cost,
+                        date: task.date,
+                      }}
+                    />
+                    {task.note === "" && <button>+ Add Note</button>}
+                    <button>Edit</button>
+                  </div>
+                );
+              })}
+
             <div>
               <input type="text" id="new-task" placeholder="Task" />
               <button>+ Add Task</button>
@@ -264,14 +312,30 @@ const CreateJobNewPage = () => {
         <section>
           <label htmlFor="priority">Priority:</label>
 
-          <select id="priority" defaultValue={"medium"}>
+          <select
+            id="priority"
+            defaultValue={"medium"}
+            onChange={(e) => {
+              setCurrentJob((prevJob) => {
+                return { ...prevJob, priority: e.target.value };
+              });
+            }}
+          >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
           </select>
 
           <label htmlFor="finish-date">Expected Completion Date</label>
-          <input type="date" id="finish-date" />
+          <input
+            type="date"
+            id="finish-date"
+            onChange={(e) => {
+              setCurrentJob((prevJob) => {
+                return { ...prevJob, finishDate: e.target.valueAsDate };
+              });
+            }}
+          />
         </section>
         <button>Create Job</button>
       </main>
