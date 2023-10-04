@@ -15,14 +15,16 @@ const DUMMY_JOB: job = {
       description: "Do this task!",
       note: "This task note says that something came up...",
       cost: "200.00",
-      date: new Date()
+      date: new Date(),
+      id: "id" + Math.random().toString(16).slice(2)
     },
     {
       completed: true,
       description: "Do other task that is listed here!",
       note: "This task note says something else...",
       cost: "300.00",
-      date: new Date("2024-12-23")
+      date: new Date("2024-12-23"),
+      id: "id" + Math.random().toString(16).slice(2)
     },
   ],
   contacts: [
@@ -127,7 +129,8 @@ const Job = () => {
             description: "Inspection and Payment Collected?",
             note: "",
             cost: "",
-            date: new Date()
+            date: new Date(),
+            id: "doesn't matter, created at runtime"
           }}
         />
       </ul>

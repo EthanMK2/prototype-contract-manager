@@ -4,6 +4,7 @@ type task = {
     note: string,
     cost: number | string,
     date: Date
+    id: string
 }
 
 export default task;
