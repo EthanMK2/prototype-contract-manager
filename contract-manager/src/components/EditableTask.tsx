@@ -3,15 +3,25 @@ import task from "../models/job/task";
 import Task from "./Task";
 import TaskEditModal from "./modals/TaskEditModal";
 import ReactDOM from "react-dom";
+import TaskNotesModal from "./modals/TaskNotesModal";
 
 type editableTask = {
   task: task;
   onSaveEditTask: (task: task) => void;
   onDeleteTask: (id: string) => void;
+  onCompleteTask: (isCompleted: boolean, id: string) => void;
+  onChangeTaskNotes: (newNotes: string, id: string) => void;
 };
 
-const EditableTask = ({ task, onSaveEditTask, onDeleteTask }: editableTask) => {
+const EditableTask = ({
+  task,
+  onSaveEditTask,
+  onDeleteTask,
+  onCompleteTask,
+  onChangeTaskNotes,
+}: editableTask) => {
   const [editTaskOpen, setEditTaskOpen] = useState<boolean>();
+  const [taskNotesOpen, setTaskNotesOpen] = useState<boolean>();
 
   const onOpenEditTask = () => {
     setEditTaskOpen(true);
@@ -20,19 +30,28 @@ const EditableTask = ({ task, onSaveEditTask, onDeleteTask }: editableTask) => {
     setEditTaskOpen(false);
   };
 
+  const onOpenTaskNotes = () => {
+    setTaskNotesOpen(true);
+  };
+  const onCloseTaskNotes = () => {
+    setTaskNotesOpen(false);
+  };
+
   return (
     <div>
-      <Task
-        task={{
-          note: task.note,
-          description: task.description,
-          completed: task.completed,
-          cost: task.cost,
-          date: task.date,
-          id: task.id,
+      <input
+        type="checkbox"
+        onChange={(e) => {
+          onCompleteTask(e.target.checked, task.id);
         }}
       />
-      {task.note === "" && <button>+ Add Note</button>}
+      <Task task={task} />
+      {task.note === "" && (
+        <button onClick={onOpenTaskNotes}>+ Add Note</button>
+      )}
+      {task.note !== "" && (
+        <button onClick={onOpenTaskNotes}>View Notes</button>
+      )}
       <button onClick={onOpenEditTask}>Edit</button>
       {editTaskOpen &&
         ReactDOM.createPortal(
@@ -41,6 +60,16 @@ const EditableTask = ({ task, onSaveEditTask, onDeleteTask }: editableTask) => {
             onClose={onCloseEditTask}
             onSaveEditTask={onSaveEditTask}
             onDeleteTask={onDeleteTask}
+          />,
+          document.getElementById("overlay-root")!
+        )}
+
+      {taskNotesOpen &&
+        ReactDOM.createPortal(
+          <TaskNotesModal
+            task={task}
+            onCloseTaskNotes={onCloseTaskNotes}
+            onChangeNotes={onChangeTaskNotes}
           />,
           document.getElementById("overlay-root")!
         )}

@@ -25,14 +25,17 @@ const ContactModal = ({
       {contactArray.map((contact) => {
         return (
           <ul>
-            <Contact
-              firstName={contact.firstName}
-              lastName={contact.lastName}
-              phone={contact.phone}
-              id={contact.id}
-              onDeleteContact={onDeleteContact}
-              showDelete={true}
-            />
+            <li>
+              <Contact
+                firstName={contact.firstName}
+                lastName={contact.lastName}
+                phone={contact.phone}
+                id={contact.id}
+                key={contact.id}
+                onDeleteContact={onDeleteContact}
+                showDelete={true}
+              />
+            </li>
           </ul>
         );
       })}

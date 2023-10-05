@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import TaskNew from "../components/TaskNew";
 import task from "../models/job/task";
 import EditableTask from "../components/EditableTask";
+import JobNotesModal from "../components/modals/JobNotesModal";
 
 const CreateJobNewPage = () => {
   // will create and maintain a Job object state (local variable), and save that object to an existing data object to Firebase (existing from the initial creation in the CreateJobMenu page)
@@ -20,7 +21,6 @@ const CreateJobNewPage = () => {
 
   const [contactsOpen, setContactsOpen] = useState<boolean>(false);
   const [notesOpen, setNotesOpen] = useState<boolean>(false);
-  const [editTaskOpen, setEditTaskOpen] = useState<boolean>(false);
   // set initial values
   const streetAddressRef = useRef<any>();
   const cityAddressRef = useRef<any>();
@@ -110,6 +110,15 @@ const CreateJobNewPage = () => {
     setNotesOpen(false);
   };
 
+  const onChangeJobNotes = (newNotes: string) => {
+    setCurrentJob((prevJob) => {
+      return {
+        ...prevJob,
+        notes: { description: newNotes },
+      };
+    });
+  };
+
   const addTask = (description: string, cost: string | number) => {
     setCurrentJob((prevJob) => {
       const newList = currentJob.checklist.concat({
@@ -147,6 +156,32 @@ const CreateJobNewPage = () => {
         ...prevJob,
         checklist: newList,
       };
+    });
+  };
+
+  const onCompleteTask = (isCompleted: boolean, id: string) => {
+    setCurrentJob((prevJob) => {
+      const newList: task[] = prevJob.checklist.map((task) => {
+        if (task.id === id) {
+          return { ...task, completed: isCompleted };
+        } else {
+          return task;
+        }
+      });
+      return { ...prevJob, checklist: newList };
+    });
+  };
+
+  const onChangeTaskNotes = (newNotes: string, id: string) => {
+    setCurrentJob((prevJob) => {
+      const newList: task[] = prevJob.checklist.map((task) => {
+        if (task.id === id) {
+          return { ...task, note: newNotes };
+        } else {
+          return task;
+        }
+      });
+      return { ...prevJob, checklist: newList };
     });
   };
 
@@ -293,24 +328,11 @@ const CreateJobNewPage = () => {
             <button onClick={onOpenJobNotes}>View Notes</button>
             {notesOpen &&
               ReactDOM.createPortal(
-                <form>
-                  <textarea
-                    name="notes"
-                    id="notes"
-                    cols={30}
-                    rows={10}
-                    value={currentJob.notes.description}
-                    onChange={(e) => {
-                      setCurrentJob((prevJob) => {
-                        return {
-                          ...prevJob,
-                          notes: { description: e.target.value },
-                        };
-                      });
-                    }}
-                  />
-                  <button onClick={onCloseJobNotes}>Done</button>
-                </form>,
+                <JobNotesModal
+                  currentNotes={currentJob.notes.description}
+                  onCloseJobNotes={onCloseJobNotes}
+                  onChangeNotes={onChangeJobNotes}
+                />,
                 document.getElementById("overlay-root")!
               )}
           </figure>
@@ -334,7 +356,9 @@ const CreateJobNewPage = () => {
                     task={task}
                     onSaveEditTask={onSaveEditTask}
                     onDeleteTask={onDeleteTask}
+                    onCompleteTask={onCompleteTask}
                     key={task.id}
+                    onChangeTaskNotes={onChangeTaskNotes}
                   />
                 );
               })}

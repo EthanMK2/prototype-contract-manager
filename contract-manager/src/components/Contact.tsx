@@ -5,8 +5,8 @@ type contactProps = {
   lastName: string | undefined;
   phone: string | undefined;
   id: string;
-  onDeleteContact: (id: string) => void,
-  showDelete: boolean
+  onDeleteContact: (id: string) => void;
+  showDelete: boolean;
 };
 
 const Contact = ({
@@ -15,24 +15,24 @@ const Contact = ({
   phone,
   id,
   onDeleteContact,
-  showDelete
+  showDelete,
 }: contactProps) => {
   return (
-    <>
-      <article>
-        <h1>
-          {firstName} {lastName}
-        </h1>
-        <a href={phone}>Phone: {phone}</a>
-        {showDelete && <button
+    <article>
+      <h1>
+        {firstName} {lastName}
+      </h1>
+      <a href={phone}>Phone: {phone}</a>
+      {showDelete && (
+        <button
           onClick={() => {
             onDeleteContact(id);
           }}
         >
           Delete
-        </button>}
-      </article>
-    </>
+        </button>
+      )}
+    </article>
   );
 };
 
