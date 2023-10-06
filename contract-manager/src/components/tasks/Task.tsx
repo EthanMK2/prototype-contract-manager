@@ -1,4 +1,4 @@
-import task from "../models/job/task";
+import task from "../../models/job/task";
 
 type taskProp = {
   task: task;

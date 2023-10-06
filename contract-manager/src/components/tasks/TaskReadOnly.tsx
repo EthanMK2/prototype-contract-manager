@@ -1,34 +1,22 @@
 import { useState } from "react";
-import task from "../models/job/task";
+import task from "../../models/job/task";
 import Task from "./Task";
-import TaskEditModal from "./modals/TaskEditModal";
+import TaskEditModal from "../modals/TaskEditModal";
 import ReactDOM from "react-dom";
-import TaskNotesModal from "./modals/TaskNotesModal";
+import TaskNotesModal from "../modals/TaskNotesModal";
 
-type editableTask = {
+type taskReadOnly = {
   task: task;
-  onSaveEditTask: (task: task) => void;
-  onDeleteTask: (id: string) => void;
-  onCompleteTask: (isCompleted: boolean, id: string) => void;
   onChangeTaskNotes: (newNotes: string, id: string) => void;
+  onCompleteTask: (isCompleted: boolean, id: string) => void;
 };
 
-const EditableTask = ({
+const TaskReadOnly = ({
   task,
-  onSaveEditTask,
-  onDeleteTask,
-  onCompleteTask,
   onChangeTaskNotes,
-}: editableTask) => {
-  const [editTaskOpen, setEditTaskOpen] = useState<boolean>();
+  onCompleteTask
+}: taskReadOnly) => {
   const [taskNotesOpen, setTaskNotesOpen] = useState<boolean>();
-
-  const onOpenEditTask = () => {
-    setEditTaskOpen(true);
-  };
-  const onCloseEditTask = () => {
-    setEditTaskOpen(false);
-  };
 
   const onOpenTaskNotes = () => {
     setTaskNotesOpen(true);
@@ -52,17 +40,6 @@ const EditableTask = ({
       {task.note !== "" && (
         <button onClick={onOpenTaskNotes}>View Notes</button>
       )}
-      <button onClick={onOpenEditTask}>Edit</button>
-      {editTaskOpen &&
-        ReactDOM.createPortal(
-          <TaskEditModal
-            task={task}
-            onClose={onCloseEditTask}
-            onSaveEditTask={onSaveEditTask}
-            onDeleteTask={onDeleteTask}
-          />,
-          document.getElementById("overlay-root")!
-        )}
 
       {taskNotesOpen &&
         ReactDOM.createPortal(
@@ -77,4 +54,4 @@ const EditableTask = ({
   );
 };
 
-export default EditableTask;
+export default TaskReadOnly;

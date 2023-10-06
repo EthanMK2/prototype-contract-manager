@@ -4,6 +4,8 @@ import ContactNew from "../ContactNew";
 
 type contactModal = {
   contactArray: Array<contact>;
+  showDeleteButton: boolean;
+  showCreateForm: boolean;
   onCloseContacts: () => void;
   onSubmitContact: (
     firstName: string | undefined,
@@ -15,6 +17,8 @@ type contactModal = {
 
 const ContactModal = ({
   contactArray,
+  showDeleteButton,
+  showCreateForm,
   onCloseContacts,
   onSubmitContact,
   onDeleteContact,
@@ -33,13 +37,13 @@ const ContactModal = ({
                 id={contact.id}
                 key={contact.id}
                 onDeleteContact={onDeleteContact}
-                showDelete={true}
+                showDelete={showDeleteButton}
               />
             </li>
           </ul>
         );
       })}
-      <ContactNew onSubmitContact={onSubmitContact} />
+      {showCreateForm && <ContactNew onSubmitContact={onSubmitContact} />}
       <button onClick={onCloseContacts}>Close</button>
     </div>
   );

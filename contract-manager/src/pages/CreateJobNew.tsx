@@ -1,6 +1,5 @@
 import Contact from "../components/Contact";
 import PageTitle from "../components/PageTitle";
-import Task from "../components/Task";
 import ContactModal from "../components/modals/ContactModal";
 import job from "../models/job/job";
 import { useRef, useState } from "react";
@@ -8,9 +7,9 @@ import { useRef, useState } from "react";
 import styles from "../sass/pages/CreateJobNew.module.scss";
 import ReactDOM from "react-dom";
 import { useNavigate } from "react-router-dom";
-import TaskNew from "../components/TaskNew";
+import TaskNew from "../components/tasks/TaskNew";
 import task from "../models/job/task";
-import EditableTask from "../components/EditableTask";
+import EditableTask from "../components/tasks/EditableTask";
 import JobNotesModal from "../components/modals/JobNotesModal";
 
 const CreateJobNewPage = () => {
@@ -314,6 +313,8 @@ const CreateJobNewPage = () => {
                     onCloseContacts={onCloseContacts}
                     onSubmitContact={onSubmitContact}
                     onDeleteContact={onDeleteContact}
+                    showDeleteButton={true}
+                    showCreateForm={true}
                   />,
                   document.getElementById("overlay-root")!
                 )}

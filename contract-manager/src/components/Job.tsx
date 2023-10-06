@@ -4,8 +4,11 @@ import Contact from "./Contact";
 import ContactModal from "./modals/ContactModal";
 
 import ReactDOM from "react-dom";
-import Task from "./Task";
-import Note from "./Note";
+import Task from "./tasks/Task";
+import JobNotesModal from "./modals/JobNotesModal";
+import task from "../models/job/task";
+import TaskReadOnly from "./tasks/TaskReadOnly";
+import { useNavigate } from "react-router-dom";
 // !!!!!!!!!!!! NOTE: THE JOB COMPONENT WILL LOAD DATA, NOT TAKE A PROP !!!!!!!!!
 // load specific job from id in PROPS, through a loader IN JOB COMPONENT
 const DUMMY_JOB: job = {
@@ -16,7 +19,7 @@ const DUMMY_JOB: job = {
       note: "This task note says that something came up...",
       cost: "200.00",
       date: new Date(),
-      id: "id" + Math.random().toString(16).slice(2)
+      id: "id" + Math.random().toString(16).slice(2),
     },
     {
       completed: true,
@@ -24,7 +27,7 @@ const DUMMY_JOB: job = {
       note: "This task note says something else...",
       cost: "300.00",
       date: new Date("2024-12-23"),
-      id: "id" + Math.random().toString(16).slice(2)
+      id: "id" + Math.random().toString(16).slice(2),
     },
   ],
   contacts: [
@@ -41,9 +44,10 @@ const DUMMY_JOB: job = {
   inspectionSuccessful: false,
   priority: "HIGH",
   timeLeft: "5 days",
-  expectedPay: "329.00",
+  expectedPay: "",
 };
 
+// more static view of the job when it is created (read-only role versus edit role)
 const Job = () => {
   const [job, setJob] = useState<job>(DUMMY_JOB);
   const {
@@ -65,44 +69,14 @@ const Job = () => {
   const [contactsOpen, setContactsOpen] = useState<boolean>(false);
   const [notesOpen, setNotesOpen] = useState<boolean>(false);
 
+  const navigate = useNavigate();
+
   const onOpenContacts = () => {
     setContactsOpen(true);
   };
 
   const onCloseContacts = () => {
     setContactsOpen(false);
-  };
-
-  const onSubmitContact = (
-    firstName: string | undefined,
-    lastName: string | undefined,
-    phone: string | undefined
-  ) => {
-    setJob((prevJob) => {
-      return {
-        ...prevJob,
-        contacts: [
-          ...prevJob.contacts,
-          {
-            firstName: firstName,
-            lastName: lastName,
-            phone: phone,
-            id: "id" + Math.random().toString(16).slice(2),
-          },
-        ],
-      };
-    });
-  };
-
-  const onDeleteContact = (id: string) => {
-    setJob((prevJob) => {
-      return {
-        ...prevJob,
-        contacts: prevJob.contacts.filter((contact) => {
-          return contact.id != id;
-        }),
-      };
-    });
   };
 
   const onOpenJobNotes = () => {
@@ -113,14 +87,52 @@ const Job = () => {
     setNotesOpen(false);
   };
 
+  const onChangeTaskNotes = (newNotes: string, id: string) => {
+    setJob((prevJob) => {
+      const newList: task[] = prevJob.checklist.map((task) => {
+        if (task.id === id) {
+          return { ...task, note: newNotes };
+        } else {
+          return task;
+        }
+      });
+      return { ...prevJob, checklist: newList };
+    });
+  };
+
+  const onCompleteTask = (isCompleted: boolean, id: string) => {
+    setJob((prevJob) => {
+      const newList: task[] = prevJob.checklist.map((task) => {
+        if (task.id === id) {
+          return { ...task, completed: isCompleted };
+        } else {
+          return task;
+        }
+      });
+      return { ...prevJob, checklist: newList };
+    });
+  };
+
   return (
     <article>
       <h1>{title}</h1>
-      <button>BACK TO MENU</button>
-      <button>Cancel Job</button>
+      <button
+        onClick={() => {
+          navigate("/");
+        }}
+      >
+        BACK TO MENU
+      </button>
       <ul>
         {checklist.map((task) => {
-          return <Task task={task} />;
+          return (
+            <TaskReadOnly
+              task={task}
+              onChangeTaskNotes={onChangeTaskNotes}
+              onCompleteTask={onCompleteTask}
+              key={task.id}
+            />
+          );
         })}
         {/* need to change the last checkbox to a different component */}
         <Task
@@ -130,7 +142,7 @@ const Job = () => {
             note: "",
             cost: "",
             date: new Date(),
-            id: "doesn't matter, created at runtime"
+            id: "doesn't matter, created at runtime",
           }}
         />
       </ul>
@@ -151,8 +163,10 @@ const Job = () => {
             <ContactModal
               contactArray={contacts}
               onCloseContacts={onCloseContacts}
-              onSubmitContact={onSubmitContact}
-              onDeleteContact={onDeleteContact}
+              onSubmitContact={() => {}}
+              onDeleteContact={() => {}}
+              showDeleteButton={false}
+              showCreateForm={false}
             />,
             document.getElementById("overlay-root")!
           )}
@@ -160,38 +174,22 @@ const Job = () => {
       <section>
         <figure>
           <figcaption>Notes</figcaption>
-          {notes.description.trim() != "" && (
-            <p>{notes.description}</p>
-          )}
+          {notes.description.trim() != "" && <p>{notes.description}</p>}
           <button onClick={onOpenJobNotes}>View Notes</button>
           {notesOpen &&
             ReactDOM.createPortal(
-              <form>
-                <textarea
-                  name="notes"
-                  id="notes"
-                  cols={30}
-                  rows={10}
-                  onChange={(e) => {
-                    setJob((prevJob) => {
-                      return {
-                        ...prevJob,
-                        notes: { description: e.target.value },
-                      };
-                    });
-                  }}
-                >
-                  {notes.description}
-                </textarea>
-                <button onClick={onCloseJobNotes}>Done</button>
-              </form>,
+              <JobNotesModal
+                currentNotes={job.notes.description}
+                onChangeNotes={() => {}}
+                onCloseJobNotes={onCloseJobNotes}
+              />,
               document.getElementById("overlay-root")!
             )}
         </figure>
       </section>
-      <p>
-        Expected Total Charge: ${expectedPay} <button>Edit</button>
-      </p>
+      {expectedPay != "" && expectedPay != 0 && (
+        <p>Expected Total Charge: ${expectedPay}</p>
+      )}
       <button>Complete Job</button>
       <section>
         <h1>Weather Forecast</h1>
