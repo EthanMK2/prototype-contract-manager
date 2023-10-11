@@ -27,6 +27,16 @@ const DUMMY_SOURCES: source[] = [
 ];
 
 const SourcingPage = () => {
+  const onDeleteSource = (id: string) => {
+    setSources((prevSources) => {
+      return [
+        ...prevSources.filter((source) => {
+          return source.id != id;
+        }),
+      ];
+    });
+  };
+
   // loader should return the list of sources to display
   const [sources, setSources] = useState<source[]>(DUMMY_SOURCES);
   const [openSourceNew, setOpenSourceNew] = useState<boolean>(false);
@@ -49,16 +59,16 @@ const SourcingPage = () => {
             }}
             onSubmitSource={(newSource: source) => {
               setSources((prevSources) => {
-                return [...prevSources, newSource]
-              })
+                return [...prevSources, newSource];
+              });
             }}
           />
         )}
         {sources.map((source) => {
-          return <Source source={source} key={source.id} />;
+          return <Source source={source} key={source.id} onDelete={onDeleteSource}/>;
         })}
       </main>
     </>
   );
 };
-export default SourcingPage; // source page (sources will simply bring up a modal instead of a new page)
+export default SourcingPage;

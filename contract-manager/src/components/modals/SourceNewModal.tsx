@@ -19,11 +19,45 @@ const SourceNewModal = ({ onClose, onSubmitSource }: sourceNewModal) => {
 
   return (
     <div>
-      <Source source={currentSource} />
+      <h2>Add Source</h2>
+      <Source
+        source={currentSource}
+        onDelete={() => {
+          setCurrentSource((prevSource) => {
+            return {
+              title: "",
+              description: "",
+              phoneNumbers: [],
+              emails: [],
+              id: prevSource.id,
+            };
+          });
+          setPhoneInput("");
+          setEmailInput("");
+        }}
+      />
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onSubmitSource(currentSource);
+          if (phoneInput === "" && emailInput === "") {
+            onSubmitSource(currentSource);
+          } else if (phoneInput === "") {
+            onSubmitSource({
+              ...currentSource,
+              emails: currentSource.emails.concat(emailInput),
+            });
+          } else if (emailInput === "") {
+            onSubmitSource({
+              ...currentSource,
+              phoneNumbers: currentSource.phoneNumbers.concat(phoneInput),
+            });
+          } else {
+            onSubmitSource({
+              ...currentSource,
+              phoneNumbers: currentSource.phoneNumbers.concat(phoneInput),
+              emails: currentSource.emails.concat(emailInput),
+            });
+          }
           onClose();
         }}
       >
@@ -35,6 +69,7 @@ const SourceNewModal = ({ onClose, onSubmitSource }: sourceNewModal) => {
           }}
           type="text"
           placeholder="Title"
+          value={currentSource.title}
           required
         />
         <input
@@ -45,6 +80,7 @@ const SourceNewModal = ({ onClose, onSubmitSource }: sourceNewModal) => {
           }}
           type="text"
           placeholder="Description"
+          value={currentSource.description}
         />
         <section>
           <input

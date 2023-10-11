@@ -1,8 +1,9 @@
 type sourceProps = {
   source: source;
+  onDelete: (id: string) => void;
 };
 
-const Source = ({ source }: sourceProps) => {
+const Source = ({ source, onDelete }: sourceProps) => {
   return (
     <article>
       <h1>{source.title}</h1>
@@ -31,6 +32,9 @@ const Source = ({ source }: sourceProps) => {
           })}
         </ul>
       )}
+      <button onClick={() => {
+        onDelete(source.id)
+      }}>Delete</button>
     </article>
   );
 };
