@@ -1,8 +1,9 @@
 type source = {
     title: string,
     description: string,
-    phoneNumbers: Array<string>
-    emails: Array<string>;
+    phoneNumbers: Array<string>,
+    emails: Array<string>,
+    id: string
 }
 
 export default source;
